@@ -6,6 +6,7 @@ import {PostModel} from './PostModel';
 export const RootModel = t.model('RootModel', {
     isLoading: t.optional(t.boolean, false),
     posts: t.array(PostModel),
+    selectedPost: t.maybeNull(PostModel),
     users: t.array(UserModel),
     filteredById: t.optional(t.number, 0),
 }).actions(self => ({
@@ -35,18 +36,26 @@ export const RootModel = t.model('RootModel', {
         self.posts.replace([post, ...self.posts])
     },
     removePost(id) {
-        self.posts.replace(self.posts.filter(post => post.id !== id))
+        self.posts.replace(self.posts.filter(post => post.id !== id));
+        self.selectedPost = null;
     },
     setFilterId(id) {
         self.filteredById = id;
-    }
+    },
+    selectPost(post) {
+        if (!post) {
+            self.selectedPost = null;
+            return;
+        }
+        self.selectedPost = { ...post };
+    },
 })).views(self => ({
     get totalPosts() {
         return self.posts.length;
     },
     get filteredPosts() {
         if (self.filteredById) {
-            return self.posts.filter(post => post.userId === self.filteredById );
+            return self.posts.filter(post => post.userId === self.filteredById);
         }
         return self.posts;
     }

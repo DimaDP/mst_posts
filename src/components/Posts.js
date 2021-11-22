@@ -1,5 +1,4 @@
 import {Button, Checkbox, List, ListItem, ListItemText} from '@mui/material';
-import {useState} from 'react';
 import {useRootStore} from '../store/store';
 import {observer} from 'mobx-react-lite';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -11,35 +10,31 @@ const DeleteButton = ({ title, onClick, disabled, fontSize, ...rest }) => (
 )
 
 const Posts = () => {
-    const [checked, setChecked] = useState([]);
-    const { filteredPosts, removePost } = useRootStore();
+    const { filteredPosts, removePost, selectPost, selectedPost } = useRootStore();
 
-    const handleToggle = (value) => () => {
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
+    const handleToggle = (value) => {
+        if (selectedPost?.id === value.id) {
+            selectPost(null);
+            return;
         }
-
-        setChecked(newChecked);
+        selectPost(value);
     };
+
     return (
-        <List dense sx={{ width: '100%', maxWidth: 600, bgcolor: 'background.paper' }}>
+        <List dense sx={{ flex: 1, maxWidth: 600, bgcolor: 'background.paper' }}>
             {filteredPosts.map((post) => {
+                const isSelected = selectedPost && selectedPost.id === post.id
                 const labelId = `checkbox-list-secondary-label-${post.id}`;
                 return (
                     <ListItem
                         key={post.id}
                         secondaryAction={
-                            <DeleteButton disabled={!checked.includes(post.id)} onClick={() => removePost(post.id)} />
+                            <DeleteButton disabled={!isSelected} onClick={() => removePost(post.id)} />
                         }
                     >
                         <Checkbox
-                            onChange={handleToggle(post.id)}
-                            checked={checked.indexOf(post.id) !== -1}
+                            onChange={() => handleToggle(post)}
+                            checked={!!isSelected}
                             inputProps={{ 'aria-labelledby': labelId }}
                         />
                             <ListItemText id={labelId} primary={post.title} />

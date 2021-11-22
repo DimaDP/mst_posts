@@ -4,7 +4,7 @@ import {observer} from 'mobx-react-lite';
 import {useState} from 'react';
 
 const NewPostForm = () => {
-    const { totalPosts, addPost, users, filteredById, setFilterId, filteredPosts } = useRootStore();
+    const { totalPosts, addPost, users, filteredById, setFilterId, filteredPosts, selectedPost } = useRootStore();
     const [post, setPost] = useState({
         title: '',
         body: '',
@@ -31,7 +31,7 @@ const NewPostForm = () => {
     };
 
     return (
-        <div>
+        <div style={{ textAlign: 'left' }}>
             <Typography variant={'h3'}>
                 Total posts amount {totalPosts}
             </Typography>
@@ -41,6 +41,8 @@ const NewPostForm = () => {
             <Box
                 display="flex"
                 width={'50%'}
+                maxWidth={300}
+                minWidth={300}
                 height={'300px'}
                 flexDirection='column'
                 p={2}
@@ -69,7 +71,7 @@ const NewPostForm = () => {
                 </FormControl>
                 <Button  variant="outlined" color='primary' onClick={createPost}>Add </Button>
             </Box>
-            <Box  width={'50%'} p={2} m={1}>
+            <Box  width={'50%'} maxWidth={300} minWidth={300} p={2} m={1}>
                 <Typography variant={'h4'}>
                     Filter posts by user
                 </Typography>
@@ -90,6 +92,13 @@ const NewPostForm = () => {
                     </Select>
                 </FormControl>
             </Box>
+            {selectedPost && (
+                <Box width={'50%'} minWidth={300} maxWidth={300} p={2} m={1}>
+                    <Typography variant='h4'>Selected post</Typography>
+                    <Typography fontWeight='bold'>{selectedPost.title}</Typography>
+                    <Typography>{selectedPost.body}</Typography>
+                </Box>
+            )}
         </div>
     )
 }
